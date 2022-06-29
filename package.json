@@ -4,7 +4,7 @@
     "description": "Development in clean architecture e TDD",
     "main": "index.js",
     "scripts": {
-        "test": "jest",
+        "test": "jest --watchAll",
         "test:staged": "jest"
     },
     "repository": {
