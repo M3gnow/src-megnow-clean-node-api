@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/M3gnow/src-megnow-clean-node-api/issues"
   },
-  "homepage": "https://github.com/M3gnow/src-megnow-clean-node-api#readme"
+  "homepage": "https://github.com/M3gnow/src-megnow-clean-node-api#readme",
+  "devDependencies": {
+    "standard": "^17.0.0"
+  }
 }
