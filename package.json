@@ -4,11 +4,15 @@
     "description": "Development in clean architecture e TDD",
     "main": "index.js",
     "scripts": {
-        "test": "jest"
+        "test": "jest",
+        "test:staged": "jest"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/M3gnow/src-megnow-clean-node-api.git"
+    },
+    "standard": {
+        "env": ["jest"]
     },
     "author": "",
     "license": "ISC",
