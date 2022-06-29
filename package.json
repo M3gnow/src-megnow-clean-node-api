@@ -4,7 +4,7 @@
   "description": "Development in clean architecture e TDD",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "lint-staged": {
     "*.js": [
@@ -29,6 +29,7 @@
   "homepage": "https://github.com/M3gnow/src-megnow-clean-node-api#readme",
   "devDependencies": {
     "husky": "^8.0.1",
+    "jest": "^28.1.2",
     "lint-staged": "^13.0.3",
     "standard": "^17.0.0"
   }
