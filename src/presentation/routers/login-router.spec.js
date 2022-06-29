@@ -66,12 +66,24 @@ describe('Login Router Integration AuthCase', () => {
     const { systemUnderTest, authUseCaseSpy } = makeSystemUnderTest()
     const httpRequest = {
       body: {
-        email: 'any-email@mail.com',
+        email: 'any_email@mail.com',
         password: 'any_password'
       }
     }
     systemUnderTest.route(httpRequest)
     expect(authUseCaseSpy.email).toBe(httpRequest.body.email)
     expect(authUseCaseSpy.password).toBe(httpRequest.body.password)
+  })
+
+  test('Should return 401 when invalid credentials are provided', () => {
+    const { systemUnderTest } = makeSystemUnderTest()
+    const httpRequest = {
+      body: {
+        email: 'invalid_email@mail.com',
+        password: 'invalid_password'
+      }
+    }
+    const httpResponse = systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(401)
   })
 })
