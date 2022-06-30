@@ -118,7 +118,7 @@ describe('Login Router Integration AuthCase', () => {
   })
 
   test('Should return 200 when credentials are provided', () => {
-    const { systemUnderTest } = makeSystemUnderTest()
+    const { systemUnderTest, authUseCaseSpy } = makeSystemUnderTest()
 
     const httpRequest = {
       body: {
@@ -128,5 +128,6 @@ describe('Login Router Integration AuthCase', () => {
     }
     const httpResponse = systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.acessToken).toEqual(authUseCaseSpy.acessToken)
   })
 })

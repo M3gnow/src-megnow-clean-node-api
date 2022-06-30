@@ -22,9 +22,10 @@ class HttpResponse {
     }
   }
 
-  static successRequest () {
+  static successRequest (data) {
     return {
-      statusCode: 200
+      statusCode: 200,
+      body: data
     }
   }
 }

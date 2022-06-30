@@ -30,7 +30,7 @@ class LoginRouter {
       return HttpResponse.unauthorizedError()
     }
 
-    return HttpResponse.successRequest()
+    return HttpResponse.successRequest({ acessToken })
   }
 }
 
