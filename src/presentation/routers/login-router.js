@@ -6,7 +6,11 @@ class LoginRouter {
   }
 
   route (httpRequest) {
-    if (!httpRequest || !httpRequest.body) {
+    if (!this.authUseCase || !this.authUseCase.auth) {
+      return HttpResponse.serverError()
+    }
+
+    if (!httpRequest || !httpRequest.body || !this.authUseCase) {
       return HttpResponse.serverError()
     }
 
@@ -20,8 +24,13 @@ class LoginRouter {
       return HttpResponse.badRequest('password')
     }
 
-    this.authUseCase.auth(email, password)
-    return HttpResponse.unauthorizedError()
+    const acessToken = this.authUseCase.auth(email, password)
+
+    if (!acessToken) {
+      return HttpResponse.unauthorizedError()
+    }
+
+    return HttpResponse.successRequest()
   }
 }
 

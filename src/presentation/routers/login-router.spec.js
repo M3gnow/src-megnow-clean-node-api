@@ -7,10 +7,12 @@ const makeSystemUnderTest = () => {
     auth (email, password) {
       this.email = email
       this.password = password
+      return this.acessToken
     }
   }
 
   const authUseCaseSpy = new AuthUseCaseSpy()
+  authUseCaseSpy.acessToken = 'valid_token'
   const systemUnderTest = new LoginRouter(authUseCaseSpy)
 
   return {
@@ -77,7 +79,9 @@ describe('Login Router Integration AuthCase', () => {
   })
 
   test('Should return 401 when invalid credentials are provided', () => {
-    const { systemUnderTest } = makeSystemUnderTest()
+    const { systemUnderTest, authUseCaseSpy } = makeSystemUnderTest()
+    authUseCaseSpy.acessToken = null
+
     const httpRequest = {
       body: {
         email: 'invalid_email@mail.com',
@@ -87,5 +91,42 @@ describe('Login Router Integration AuthCase', () => {
     const httpResponse = systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(401)
     expect(httpResponse.body).toEqual(new UnauthorizedError())
+  })
+
+  test('Should return 500 if no AuthUseCase is provided', () => {
+    const systemUnderTest = new LoginRouter()
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 500 if no AuthUseCase has no auth method', () => {
+    const systemUnderTest = new LoginRouter({})
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 200 when credentials are provided', () => {
+    const { systemUnderTest } = makeSystemUnderTest()
+
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
   })
 })
