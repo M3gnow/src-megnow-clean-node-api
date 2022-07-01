@@ -18,7 +18,8 @@ const makeSystemUnderTest = () => {
 
 const makeEmailValidator = () => {
   class EmailValidatorSpy {
-    isValid () {
+    isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
@@ -252,5 +253,17 @@ describe('Login Router Integration AuthCase', () => {
 
     const httpResponse = await systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should call EmailValidator with corret email', async () => {
+    const { systemUnderTest, emailValidatorSpy } = makeSystemUnderTest()
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    await systemUnderTest.route(httpRequest)
+    expect(emailValidatorSpy.email).toBe(httpRequest.body.email)
   })
 })
