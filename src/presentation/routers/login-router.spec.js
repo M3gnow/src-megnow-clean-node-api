@@ -1,8 +1,20 @@
 const LoginRouter = require('./login-router')
 const MissingParamError = require('../helpers/missing-param-error')
 const UnauthorizedError = require('../helpers/unauthorized-error')
+const ServerError = require('../helpers/server-error')
 
 const makeSystemUnderTest = () => {
+  const authUseCaseSpy = makeAuthUseCaseSpy()
+  authUseCaseSpy.acessToken = 'valid_token'
+  const systemUnderTest = new LoginRouter(authUseCaseSpy)
+
+  return {
+    systemUnderTest,
+    authUseCaseSpy
+  }
+}
+
+const makeAuthUseCaseSpy = () => {
   class AuthUseCaseSpy {
     auth (email, password) {
       this.email = email
@@ -11,14 +23,17 @@ const makeSystemUnderTest = () => {
     }
   }
 
-  const authUseCaseSpy = new AuthUseCaseSpy()
-  authUseCaseSpy.acessToken = 'valid_token'
-  const systemUnderTest = new LoginRouter(authUseCaseSpy)
+  return new AuthUseCaseSpy()
+}
 
-  return {
-    systemUnderTest,
-    authUseCaseSpy
+const makeAuthUseCaseWithError = () => {
+  class AuthUseCaseSpy {
+    auth (email, password) {
+      throw new Error()
+    }
   }
+
+  return new AuthUseCaseSpy()
 }
 
 describe('Login Router', () => {
@@ -54,6 +69,7 @@ describe('Login Router', () => {
     const httpResponse = systemUnderTest.route()
 
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 500 if no httpRequest has no body', () => {
@@ -61,6 +77,7 @@ describe('Login Router', () => {
     const httpResponse = systemUnderTest.route({ })
 
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 })
 
@@ -103,6 +120,7 @@ describe('Login Router Integration AuthCase', () => {
     }
     const httpResponse = systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 500 if no AuthUseCase has no auth method', () => {
@@ -115,6 +133,7 @@ describe('Login Router Integration AuthCase', () => {
     }
     const httpResponse = systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('Should return 200 when credentials are provided', () => {
@@ -129,5 +148,19 @@ describe('Login Router Integration AuthCase', () => {
     const httpResponse = systemUnderTest.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body.acessToken).toEqual(authUseCaseSpy.acessToken)
+  })
+
+  test('should ', () => {
+    const authUseCaseSpy = makeAuthUseCaseWithError()
+    const systemUnderTest = new LoginRouter(authUseCaseSpy)
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+
+    const httpResponse = systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
   })
 })
