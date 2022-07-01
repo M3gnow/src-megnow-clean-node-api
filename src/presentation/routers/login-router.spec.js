@@ -54,6 +54,16 @@ const makeAuthUseCaseWithError = () => {
   return new AuthUseCaseSpy()
 }
 
+const makeEmailValidatorWithError = () => {
+  class EmailValidatorSpy {
+    isvalid (email) {
+      throw new Error()
+    }
+  }
+
+  return new EmailValidatorSpy()
+}
+
 describe('Login Router', () => {
   test('Should return 400 if no email is provided', async () => {
     const { systemUnderTest } = makeSystemUnderTest()
@@ -227,5 +237,20 @@ describe('Login Router Integration AuthCase', () => {
 
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should return 500 if AuthUseCase throws ', async () => {
+    const authUseCaseSpy = makeAuthUseCase()
+    const emailValidatorSpy = makeEmailValidatorWithError()
+    const systemUnderTest = new LoginRouter(authUseCaseSpy, emailValidatorSpy)
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+
+    const httpResponse = await systemUnderTest.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
   })
 })
